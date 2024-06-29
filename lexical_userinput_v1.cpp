@@ -40,7 +40,8 @@ void lexemPrinter()
     }
 }
 
-bool startsWithNumberChecker(string expression){
+bool startsWithNumberChecker(string expression)
+{
     bool startsWithNumber = false;
     lexem = "";
 
@@ -48,7 +49,7 @@ bool startsWithNumberChecker(string expression){
     {
         codeCharacter = expression[charPos];
 
-        if (isdigit(codeCharacter) && lexem.length() == 0) //if space found and a digit also first char of lexem is a digit
+        if (isdigit(codeCharacter) && lexem.length() == 0) // if space found and a digit also first char of lexem is a digit
         {
             startsWithNumber = true;
         }
@@ -68,15 +69,15 @@ string initializationHandler(string expression)
     for (size_t charPos = 0; charPos < expression.length(); charPos++)
     {
         codeCharacter = expression[charPos];
-        if (codeCharacter == ' ' && !spaceFound)
-        {
-            spaceFound = true;
-            lexemArray.push_back(lexem);
-            lexem = "";
-            continue;
-        }
-
-        if (spaceFound && isdigit(codeCharacter) && lexem.length() == 0) //if space found and a digit also first char of lexem is a digit
+        // if (codeCharacter == ' ' && !spaceFound)
+        // {
+        //     spaceFound = true;
+        //     lexemArray.push_back(lexem);
+        //     lexem = "";
+        //     continue;
+        // }
+        // spaceFound &&
+        if ( isdigit(codeCharacter) && lexem.length() == 0) // if space found and a digit also first char of lexem is a digit
         {
             startsWithNumber = true;
         }
@@ -116,9 +117,12 @@ void rightSideExpressionHandler(string expression)
         if (codeCharacter == '+' || codeCharacter == '-' || codeCharacter == '*' || codeCharacter == '/')
         {
             symbol = codeCharacter;
-            if(!is_number(lexem) && startsWithNumberChecker(lexem)){
+            if (!is_number(lexem) && startsWithNumberChecker(lexem))
+            {
                 lexemArray.push_back(lexem + "\n\e[1;31m^- lexical error, lexem starts with number\e[0m");
-            }else{
+            }
+            else
+            {
                 lexemArray.push_back(lexem);
             }
             lexem = symbol;
@@ -139,34 +143,33 @@ void rightSideExpressionHandler(string expression)
 int main()
 {
     string userCode;
-    ifstream MyReadFile("text.mylang");
-    while (getline(MyReadFile, userCode))
+    cout << "enter your code: ";
+    getline(cin, userCode);
+
+    cleanVariables();
+    for (size_t charPos = 0; charPos < userCode.length(); charPos++)
     {
-        cleanVariables();
-        for (size_t charPos = 0; charPos < userCode.length(); charPos++)
+        codeCharacter = userCode[charPos];
+        if (codeCharacter == ';')
         {
-            codeCharacter = userCode[charPos];
-            if (codeCharacter == ';')
-            {
-                rightSideExpressionHandler(rightPortionOfLine);
-                lexemArray.push_back(";");
-                endSignal = true;
-                break;
-            }
-            if (codeCharacter == '=')
-            {
-                equalFound = true;
-                initializationHandler(leftPortionOFLine);
-                lexemArray.push_back("=");
-                continue;
-            }
-            if (!equalFound)
-            {
-                leftPortionOFLine += codeCharacter;
-                continue;
-            }
-            rightPortionOfLine += codeCharacter;
+            rightSideExpressionHandler(rightPortionOfLine);
+            lexemArray.push_back(";");
+            endSignal = true;
+            break;
         }
+        if (codeCharacter == '=')
+        {
+            equalFound = true;
+            initializationHandler(leftPortionOFLine);
+            lexemArray.push_back("=");
+            continue;
+        }
+        if (!equalFound)
+        {
+            leftPortionOFLine += codeCharacter;
+            continue;
+        }
+        rightPortionOfLine += codeCharacter;
     }
 
     std::cout << "All lexems: " << endl;
