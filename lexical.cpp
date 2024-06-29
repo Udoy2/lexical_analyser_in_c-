@@ -40,6 +40,25 @@ void lexemPrinter()
     }
 }
 
+bool startsWithNumberChecker(string expression){
+    bool startsWithNumber = false;
+    lexem = "";
+
+    for (size_t charPos = 0; charPos < expression.length(); charPos++)
+    {
+        codeCharacter = expression[charPos];
+
+        if (isdigit(codeCharacter) && lexem.length() == 0) //if space found and a digit also first char of lexem is a digit
+        {
+            startsWithNumber = true;
+        }
+
+        lexem += codeCharacter;
+    }
+
+    return startsWithNumber;
+}
+
 string initializationHandler(string expression)
 {
     spaceFound = false;
@@ -67,7 +86,7 @@ string initializationHandler(string expression)
 
     if (startsWithNumber)
     {
-        lexemArray.push_back(lexem + " < -lexical error in this line, starts with number");
+        lexemArray.push_back(lexem + "\n\e[1;31m^- lexical error, lexem starts with number\e[0m");
     }
     else
     {
@@ -81,7 +100,7 @@ void rightSideExpressionHandler(string expression)
 {
     lexem = "";
     string cleanExpression = "";
-
+    string symbol = "";
     for (char c : expression)
     {
         if (c != ' ')
@@ -96,8 +115,13 @@ void rightSideExpressionHandler(string expression)
 
         if (codeCharacter == '+' || codeCharacter == '-' || codeCharacter == '*' || codeCharacter == '/')
         {
-            lexemArray.push_back(lexem);
-            lexem = codeCharacter;
+            symbol = codeCharacter;
+            if(!is_number(lexem) && startsWithNumberChecker(lexem)){
+                lexemArray.push_back(lexem + "\n\e[1;31m^- lexical error, lexem starts with number\e[0m");
+            }else{
+                lexemArray.push_back(lexem);
+            }
+            lexem = symbol;
             lexemArray.push_back(lexem);
             lexem = "";
             continue;
@@ -147,8 +171,8 @@ int main()
 
     std::cout << "All lexems: " << endl;
     lexemPrinter();
-    std::cout << "Right portion of line: " << rightPortionOfLine << endl;
-    std::cout << "Left portion of line: " << leftPortionOFLine << endl;
+    // std::cout << "Right portion of line: " << rightPortionOfLine << endl;
+    // std::cout << "Left portion of line: " << leftPortionOFLine << endl;
 
     return 0;
 }
